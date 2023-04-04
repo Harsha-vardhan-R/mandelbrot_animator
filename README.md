@@ -8,6 +8,6 @@ The code is not only designed to plot the mandelbrot set but, you can also:
 
 
 
-Example Image:(This is rendered completely by the above code)
+Example Image:(This is rendered completely by the above code.)
 
 ![mand1](https://user-images.githubusercontent.com/112687561/229769321-7c5ba5dc-321f-4edb-a18c-eaac12597d88.png)
