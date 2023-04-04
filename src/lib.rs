@@ -24,7 +24,8 @@ pub fn no_of_bounces(input_complex: num::complex::Complex64,distinction: u16) ->
 /*
 The work of this function is to take in a single value
 turn the value into r,g,b components to maintain a
-proper colour palatte.
+proper colour palatte.Editing this function will 
+give different colour palette.
 */
 pub fn pixelcolour(Para: u16) -> (u8 , u8 , u8) {
     let r = Para as u8;
