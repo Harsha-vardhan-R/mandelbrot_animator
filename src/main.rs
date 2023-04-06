@@ -1,43 +1,36 @@
-#[allow(non_snake_case)]
+#[allow(non_snake_case,unused_mut,unused_assignments)]
 use image::RgbImage;
-use mandelbrot::{no_of_bounces, pixelcolour};
+use mandelbrot_animator::{no_of_bounces, pixelcolour};
 use num::complex::Complex;
-//c = -0.75 + 0i
-/* 
-for a normal set.
-let osx = 2.1_f64;
-let osy = osx;
-let fosx = -1.6;
-let fosy = -1.05;
-*/
+//Images will be stored in "Rendered_images_here" folder.
 fn main() {
 
-    // Setting the dimensions of the output photograph.1:1 image, so two values are ot required.
-    let dimen = 1081;
-    let mut imgbuffer = RgbImage::new(dimen, dimen);
-    //which point you want at the center--(The zoom in boundary point)
-    let (_fixpnt_x, _fixpnt_y) = (0.0 , 0.0);
-
-    let osx = 2.5_f64;
-    let osy = osx;
-    //Shifting the center because the image crate has (o,o) at it's top-left corer.
+    //1:1 Aspect ratio.
+    let dimen = 1000;
+    //which point you want to be zoomed in(The zoom in boundary point)--the given point is one of the interesting points.
+    let (fixpnt_x, fixpnt_y) = (-0.743643887037158704752191506114774 , 0.131825904205311970493132056385139);
     let fosx = -1.8;
     let fosy = -1.15;
+    let mut range = 2.3_f64;
+    let mut pivot_point = (fosx , fosy);
+
+    let mut frame = 1_u8;
 
     //loop for creating an animation by changing parameters little by little.
     loop {
 
-        let rngx = 2.3_f64;
-        let rngy = rngx;
+        let mut imgbuffer = RgbImage::new(dimen, dimen);
+
+        let gradient = range / (dimen as f64);
 
         for x in 0..dimen {
 
             for y in 0..dimen {
 
-                let cx = fosx + (rngx * (x as f64 / dimen as f64));
-                let cy = fosy + (rngy * (y as f64 / dimen as f64));
+                //Nothing much to change here.
+                let cx = pivot_point.0 + (gradient * (x as f64));
+                let cy = pivot_point.1 + (gradient * (y as f64));
 
-                //Nothing to do here.
                 let c = Complex::new(cx, cy);
                 let i = no_of_bounces(c, 255);
                 let (cr, cg, cb) = pixelcolour(i);
@@ -48,11 +41,22 @@ fn main() {
             
         }
 
-        let _path = format!("Rendered_images_here/Image {} {}.png", dimen , dimen);
-        imgbuffer.save(_path).unwrap();
+        let path = format!("Rendered_images_here/Fractal resolution-{} frame-{}.png", dimen , frame);
+        imgbuffer.save(path).unwrap();
+        /*
+        This controls the speed/smoothness of the animation,
+        should be inbetween exclusively 0.0 and 1.0,
+        nearer values to 1 make a smoother animation.
+        */
+        let k = 0.97;
+        range = range * k;
+        pivot_point.0 = fixpnt_x - (k * (fixpnt_x - pivot_point.0));
+        pivot_point.1 = fixpnt_y - (k * (fixpnt_y - pivot_point.1));
         
-        break;
-            
+        frame += 1;
+        
+        //break;//If you only want one frame.
+
     }
     
 }
