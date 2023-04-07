@@ -32,7 +32,7 @@ pub mod pixel_parameters {
         let para = para as u8;
         let r = para;
         let g = para;
-        let b = 255 - para;
+        let b = para;
 
         (r , g , b)
 
