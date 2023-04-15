@@ -32,10 +32,8 @@ pub mod pixel_parameters {
         //let us control the hue saturation value and then turn it into an rgb value.
         //hue: 0 -> 359 ..... value: 0.0 -> 1.0 ..... saturation: 0.0 -> 1.0.
         let b = (para) as f64 / 255 as f64;
-        let hue = (b * 359.0).floor();/* match b {
-            val if val < 0.5 => (( 1.0 - b ) * 240.0).floor(),
-            _ => 
-        }; */
+        let hue = (b * 359.0).floor();
+        
         let saturation = b;
         let value = (b * 2.0).clamp(0.0 , 1.0);
     
