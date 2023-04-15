@@ -1,4 +1,4 @@
-#[allow(non_snake_case,unused_mut,unused_assignments)]
+#[allow(non_snake_case,unused_mut,unused_assignments,unused_imports)]
 use image::RgbImage;
 use num::complex::Complex;
 use mandelbrot_animator::pixel_parameters::*;
@@ -7,17 +7,18 @@ use std::time;
 
 fn main() -> ! {
 
-    //Images will be stored in "Rendered_images_here" folder.
-    let path = "Rendered_images_here";
+    //Images will be stored in "##" folder,But don't forget to create one before rendering.
+    let path = "hava";
     //1:1 Aspect ratio.
     let dimen = 1000;
     //which point you want to be zoomed in(The zoom in boundary point)--the given point is one of the interesting points.
     let (fixpnt_x, fixpnt_y) = (-0.743643887037158704752191506114774 , 0.131825904205311970493132056385139);
-    //Initial fixed off-sets and range, Not to be disturbed if you want a full image at the start of the animation.
+    //Initial fixed off-sets and range, Not to be disturbed if you want a near full image at the start.
     let fosx = -1.8;
     let fosy = -1.15;
     let mut range = 2.3_f64;
     let mut pivot_point = (fosx , fosy);
+    //Meant to be the relative resolution.....still not developed##
     let distinction = 255_u16;
     
     let mut frame = 1_u16;
@@ -46,24 +47,26 @@ fn main() -> ! {
             
         }
 
-        let path = format!("{}/Fractal resolution-{} frame-{}.png",path, dimen , frame);
+        let path = format!("{}/Fractal final_resolution-{} frame-{}.png",path, dimen , frame);
         imgbuffer.save(path).unwrap();
         /*
-        This controls the speed/smoothness of the animation,should be inbetween exclusively 0.0 and 1.0,
+        This controls the speed/smoothness of the animation,should be inbetween excluding 0.0 and 1.0,
         nearer values to 1 make a smoother animation.
         */
-        let k = 0.99;
+        let k = 0.5;
+        //Nothing much to change here.
         range = range * k;
         pivot_point.0 = fixpnt_x - (k * (fixpnt_x - pivot_point.0));
         pivot_point.1 = fixpnt_y - (k * (fixpnt_y - pivot_point.1));
         
+        print!("{frame}  -> ");
         frame += 1;
         
         //break;//If you only want one frame.
         let end_time = time::Instant::now();
         let duration = end_time - start_time;
         //This debug is to know the amount of time taken to render the present frame;
-        dbg!(duration);
+        println!("{:?}",duration);
 
     }
     
