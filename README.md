@@ -1,5 +1,5 @@
 This is an implementation of the "Mandelbrot Set" in Rust using the Image crate.
-##Development paused
+
 The code is not only designed to plot the mandelbrot set but, you can also:
        ---Create an animation zooming into a particular point in the complex plane.
        ---Change your whole coloring scheme.
