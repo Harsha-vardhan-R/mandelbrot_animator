@@ -281,7 +281,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "mandelbrot"
+name = "mandelbrot_animator"
 version = "0.1.0"
 dependencies = [
  "image",

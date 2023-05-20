@@ -1,16 +1,16 @@
-#[allow(non_snake_case,unused_mut,unused_assignments,unused_imports)]
+#![allow(non_snake_case,unused_mut,unused_assignments,unused_imports)]
 use image::RgbImage;
 use num::complex::Complex;
 use mandelbrot_animator::pixel_parameters::*;
 use std::time;
+//use rayon::prelude::*;
 
-
-fn main() -> ! {
+fn main() {
 
     //Images will be stored in "##" folder,But don't forget to create one before rendering.
-    let path = "hava";
+    let path = "dck";
     //1:1 Aspect ratio.
-    let dimen = 1000;
+    let dimen = 3000;
     //which point you want to be zoomed in(The zoom in boundary point)--the given point is one of the interesting points.
     let (fixpnt_x, fixpnt_y) = (-0.743643887037158704752191506114774 , 0.131825904205311970493132056385139);
     //Initial fixed off-sets and range, Not to be disturbed if you want a near full image at the start.
@@ -19,7 +19,7 @@ fn main() -> ! {
     let mut range = 2.3_f64;
     let mut pivot_point = (fosx , fosy);
     //Meant to be the relative resolution.....still not developed##
-    let distinction = 255_u16;
+    let max_iterations = 200_u16;
     
     let mut frame = 1_u16;
 
@@ -38,8 +38,8 @@ fn main() -> ! {
                 let cx = pivot_point.0 + (gradient * (x as f64));
                 let cy = pivot_point.1 + (gradient * (y as f64));
                 let c = Complex::new(cx, cy);
-                let i = no_of_bounces(c, distinction);
-                let (cr, cg, cb) = pixelcolour(i);
+                let i = no_of_bounces(c, max_iterations);
+                let (cr, cg, cb) = pixelcolour(i , max_iterations);
                 let colourofpixel = image::Rgb([cr , cg , cb]);
                 imgbuffer.put_pixel(x, y, colourofpixel);
 
@@ -53,7 +53,7 @@ fn main() -> ! {
         This controls the speed/smoothness of the animation,should be inbetween excluding 0.0 and 1.0,
         nearer values to 1 make a smoother animation.
         */
-        let k = 0.5;
+        let k = 0.1;
         //Nothing much to change here.
         range = range * k;
         pivot_point.0 = fixpnt_x - (k * (fixpnt_x - pivot_point.0));
@@ -65,7 +65,7 @@ fn main() -> ! {
         //break;//If you only want one frame.
         let end_time = time::Instant::now();
         let duration = end_time - start_time;
-        //This debug is to know the amount of time taken to render the present frame;
+        //This debug is to know the amount of time taken to render the present frame.
         println!("{:?}",duration);
 
     }

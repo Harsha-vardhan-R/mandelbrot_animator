@@ -25,23 +25,31 @@ pub mod pixel_parameters {
         count
 
     }
-
-    
+    ///////////
+    /// //////////
+    /// ////////////
+    /// //////////////
+    ///Todo: try normalising the number of bounces, cause maybe the number of bounces is only giving a subset of the values it is meant to give out , so nearby pixels are taking the same colours.
     //Take in a single value return three values for r,g,b components to maintain a proper colour palatte.
-    pub fn pixelcolour(para: u16) -> (u8 , u8 , u8) {
+    pub fn pixelcolour(para: u16 , distinction: u16) -> (u8 , u8 , u8) {
         //let us control the hue saturation value and then turn it into an rgb value.
         //hue: 0 -> 359 ..... value: 0.0 -> 1.0 ..... saturation: 0.0 -> 1.0.
-        let b = (para) as f64 / 255 as f64;
+        let b = (para) as f64 / distinction as f64;
         let hue = (b * 359.0).floor();
-        
-        let saturation = b;
-        let value = (b * 2.0).clamp(0.0 , 1.0);
-    
+        //let saturation = 1.0;//b;////modified
+        let saturation = 1.0;
+        //let value = 1.0;// - b;/////modified
+        let value = if para > 200 {//this is to get that black void where it never escapes . looks cool.
+            0.0
+        } else {
+            1.0
+        };
+
         let ( r , g , b ) = hsv_to_rgb(hue, saturation, value);
 
         ( r, g, b )
     }
-    //algorithm by me, but the idea is standard.
+    //algorithm by me, but the idea is pretty standard.
     pub fn hsv_to_rgb(hue: f64, saturation: f64, value: f64) -> (u8, u8 , u8) {
 
         let rgb_range = value * saturation;
@@ -66,10 +74,41 @@ pub mod pixel_parameters {
 
         };
         //return values(presently between [0.0 and 1.0]) multipling with 255 so that we magnify it for the respective rgb values.
-        ( (cr * 255.0).floor() as u8 , (cg * 255.0).floor() as u8 , (cb * 255.0).floor() as u8 )
+        ( (cr * 255.0).floor() as u8 , (cg * 255.0).floor() as u8 , (cb * 255.0).floor() as u8)
 
 
     }
     
+
+}
+
+
+
+
+mod tests{
+    use image;
+
+    use crate::pixel_parameters::pixelcolour;
+
+    #[test]   
+    
+    fn some_rand_test() {//perfectly working
+        let (w, h) = ( 256 , 256 );
+        let mut image_buffer = image::RgbImage::new(w , h);
+
+        
+        for x in 0..255 {
+            for y in 0..255 {
+                //let value = 1.0;
+                let (cr, cg, cb) = pixelcolour(x , 255);
+                let colourofpixel = image::Rgb([cr , cg , cb]);
+                image_buffer.put_pixel(x.into() , y, colourofpixel);
+                
+            }
+        }
+
+        image_buffer.save("dnno/image1.png").unwrap();
+
+    }
 
 }
