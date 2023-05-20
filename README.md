@@ -8,11 +8,13 @@ The code is not only designed to plot the mandelbrot set but, you can also:
 
 
 
-Example Image(10000 * 10000):(This is rendered completely by the above code.)
+Example Image(3000 * 3000):(This is rendered completely by the above code.)
+
+![Fractal final_resolution-3000 frame-5](https://github.com/Harsha-vardhan-R/mandelbrot_animator/assets/112687561/65314f67-59e8-41b2-8fed-51f86c19ce25)
 
 
-![hi_res(10,000)](https://user-images.githubusercontent.com/112687561/229808834-0c7156d5-a6a5-43fd-b0eb-7638c395c138.png)
 
+![Fractal final_resolution-3000 frame-3](https://github.com/Harsha-vardhan-R/mandelbrot_animator/assets/112687561/03e7d076-7d08-44a4-8153-be758feb373e)
 
 
 None of the code still makes use of concurrency,will be included in future versions. 
