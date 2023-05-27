@@ -1,19 +1,19 @@
-#[allow(non_snake_case)]
+#![allow(non_snake_case)]
 
 
 pub mod pixel_parameters {
     
-    use num::{complex::Complex, clamp};
+    use num::{complex::Complex};
     /*
     This function gives out the count value, which is the number of bounces(iterations)
     it takes to get out of the threshold value(point of no return)(here it is 2)
     so if a input number has more bounces it means it is nearer to converging or it converges.
     Distintion takes the maximum number of bounces to look before it escapes.
     */
-    pub fn no_of_bounces(input_complex: num::complex::Complex64,distinction: u16) -> u16 {
+    pub fn no_of_bounces(input_complex: num::complex::Complex64, distinction: u32) -> u32 {
 
         let mut count = 0;
-        let input_complex = Complex::new(input_complex.re as f32, input_complex.im as f32);
+        let input_complex = Complex::new(input_complex.re, input_complex.im);
         let mut z = Complex::new(0.0, 0.0);
 
         while count <= distinction && z.norm() < 2.0  {
@@ -25,13 +25,10 @@ pub mod pixel_parameters {
         count
 
     }
-    ///////////
-    /// //////////
-    /// ////////////
-    /// //////////////
+   
     ///Todo: try normalising the number of bounces, cause maybe the number of bounces is only giving a subset of the values it is meant to give out , so nearby pixels are taking the same colours.
     //Take in a single value return three values for r,g,b components to maintain a proper colour palatte.
-    pub fn pixelcolour(para: u16 , distinction: u16) -> (u8 , u8 , u8) {
+    pub fn pixelcolour(para: u32 , distinction: u32) -> (u8 , u8 , u8) {
         //let us control the hue saturation value and then turn it into an rgb value.
         //hue: 0 -> 359 ..... value: 0.0 -> 1.0 ..... saturation: 0.0 -> 1.0.
         let b = (para) as f64 / distinction as f64;
@@ -39,7 +36,7 @@ pub mod pixel_parameters {
         //let saturation = 1.0;//b;////modified
         let saturation = 1.0;
         //let value = 1.0;// - b;/////modified
-        let value = if para > 200 {//this is to get that black void where it never escapes . looks cool.
+        let value = if para >= (distinction - 1) {//this is to get that black void where it never escapes . looks cool.
             0.0
         } else {
             1.0
@@ -49,8 +46,9 @@ pub mod pixel_parameters {
 
         ( r, g, b )
     }
-    //algorithm by me, but the idea is pretty standard.
-    pub fn hsv_to_rgb(hue: f64, saturation: f64, value: f64) -> (u8, u8 , u8) {
+
+    //Algorithm by me, but the idea is pretty standard.
+    fn hsv_to_rgb(hue: f64, saturation: f64, value: f64) -> (u8, u8 , u8) {
 
         let rgb_range = value * saturation;
         let rgb_max = value;
@@ -84,7 +82,33 @@ pub mod pixel_parameters {
 
 
 
+pub mod image_handlers {
+    //still need to write.
+    pub fn into_video(path : &str) {
 
+    }
+
+}
+
+pub mod arith_max_min {
+    pub fn give_max_and_min(in_vector : &Vec<Vec<u32>>) -> (u32 , u32) {
+        let mut here: Vec<u32> = vec![];
+
+        for x in 0..in_vector.len() {
+            //assumin it atleast has one value inside the vectors
+            for y in 0..in_vector[0].len() {
+                here.push(in_vector[x][y]);
+            }
+        }
+
+
+        (*here.iter().max().unwrap() , *here.iter().min().unwrap())
+    }
+}
+
+
+
+#[cfg(test)]
 mod tests{
     use image;
 
