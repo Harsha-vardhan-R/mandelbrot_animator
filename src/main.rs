@@ -3,20 +3,21 @@ use image::{RgbImage, Rgb};
 use num::complex::Complex;
 use mandelbrot_animator::{pixel_parameters::*, image_handlers::into_video, arith_max_min::give_max_and_min};
 use std::{time, cmp::min};
+use rayon::prelude::*;
 
 fn main() {
 
     //#########can be changed, from here.##########
     //Images will be stored in "##" folder,do not forget to create one before rendering.
-    let path_ = "new_folder";    
+    let path_ = "hhhh";    
     let dimen = 1000_u32;//1:1 Aspect ratio.
     //which point you want to be zoomed in(The zoom in boundary point)--the given point is one of the interesting points.
     //(-0.743643887037158704752191506114774 , 0.131825904205311970493132056385139)
-    let (fixpnt_x, fixpnt_y) = (-0.77568377, 0.13646737);    
+    let (fixpnt_x, fixpnt_y) = (-1.2425401371689826, 0.4132381516063688);    
     let number_of_frames = 100;
     let mut _max_iterations = 255_u32;//number of color bands in the image
     /*This controls the speed/smoothness of the animation,should be inbetween excluding 0.0 and 1.0,values nearer to 1 fetch a smoother animation.*/
-    let k = 0.1;
+    let k = 0.7;
     //##########Till here###########.
 
     //Initial fixed off-sets and range, Not to be messed with if you want a near full image at the start.
@@ -26,7 +27,7 @@ fn main() {
     let mut pivot_point = (fosx , fosy);
     let mut frame = 1_u32;
     let mut store_bounces : Vec<Vec<u32>> = vec![ vec![0 ; dimen.try_into().unwrap()] ; dimen.try_into().unwrap()];
-    let mut max_iterations = _max_iterations.clone();
+    let mut max_iterations = _max_iterations;
 
     //loop for creating an animation, Need to stop it manually by pessing ctrl + c or cmd + c in the terminal.
     loop {
@@ -36,14 +37,16 @@ fn main() {
         let gradient = range / (dimen as f64);
 
         //This loop is only to store the number of bounces for each pixel, So we will have a better control over the normalisation process.
-        for x in 0..dimen {
-            for y in 0..dimen {
+        // This loop is only to store the number of bounces for each pixel.
+        store_bounces.par_iter_mut().enumerate().for_each(|(x, list)| {
+                list.iter_mut().enumerate().for_each(|(y, number)| {
                 let cx = pivot_point.0 + (gradient * (x as f64));
                 let cy = pivot_point.1 + (gradient * (y as f64));
                 let c = Complex::new(cx, cy);
-                store_bounces[x as usize][y as usize] = no_of_bounces(c, max_iterations);               
-            }            
-        }
+                *number = no_of_bounces(c, max_iterations);
+            });
+        });
+
 
         //normalising the number of bounces.
         let min_max = give_max_and_min(&store_bounces);
@@ -54,15 +57,18 @@ fn main() {
         }
         
 
-        //In this loop we will take the normalised bounce values and apply them onto the image.
+        // In this loop, we will take the normalized bounce values and apply them to the image.
         for x in 0..dimen {
             for y in 0..dimen {
-                let (cr, cg, cb) = pixelcolour(store_bounces[x as usize][y as usize] , min_max.0);
-                imgbuffer.put_pixel(x, y, image::Rgb([cr , cg , cb]));
-            }            
-        }        
+                let (cr, cg, cb) = pixelcolour(store_bounces[x as usize][y as usize], min_max.0);
+                imgbuffer.put_pixel(x, y, image::Rgb([cr, cg, cb]));
+            }
+        }
+
+        
 
         let path = format!("{}/Fractal final_resolution-{} frame-{}.png",path_, dimen , frame);
+        imgbuffer = image::imageops::flip_vertical(&imgbuffer);//tempfix, i found that the images are being flipped along y axis.
         imgbuffer.save(path).unwrap();
         
         
@@ -75,8 +81,12 @@ fn main() {
         println!("Zoom level : {}" , range);
         frame += 1;    
         //Improving the number of max bounces with frame , remember this also depends on the zoom value , so simply putting the frame in some formula will not work.
-        max_iterations = _max_iterations + min_max.1;//we add the min value to original value every time , from debug we know that the min value increases so this should also increase.
-        range = range * k;
+        max_iterations = if (_max_iterations + min_max.1) > max_iterations {
+            _max_iterations + min_max.1
+        }else {
+            max_iterations
+        };//we add the min value to original value every time , from debug we know that the min value increases so this should also increase.
+        range *= k;
         pivot_point.0 = fixpnt_x - (k * (fixpnt_x - pivot_point.0));
         pivot_point.1 = fixpnt_y - (k * (fixpnt_y - pivot_point.1));      
         
