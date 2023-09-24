@@ -1,5 +1,10 @@
 Rendering Mandelbrot set using Rust and Image crate.
 
+Next in todo 
+-ffmpeg directly in the code.
+-use gpu?
+-implement for a big float f64 precision is barely enough for the deep zoomes.
+
 -> Enter a point in the complex plane, and the zoom ratio, it will generate series of photos zooming into the fractal.
 
 Example Image:(Theseimages are completely rendered by the above code.)
